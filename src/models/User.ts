@@ -1,5 +1,11 @@
 import moongose, { Schema } from "mongoose";
 
+export interface IUser {
+  name: string;
+  email: string;
+  password: string;
+}
+
 const userSchema = new Schema({
   name: {
     type: String,
@@ -17,6 +23,6 @@ const userSchema = new Schema({
   },
 });
 
-const User = moongose.model("User", userSchema);
+const User = moongose.model<IUser>("User", userSchema);
 
 export default User;
