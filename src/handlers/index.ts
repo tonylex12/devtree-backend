@@ -1,6 +1,8 @@
-import { Request, Response } from "express";
+import bcrypt from "bcrypt";
 
+import { Request, Response } from "express";
 import User from "../models/User";
+import { hashPassword } from "../utils/auth";
 
 export const createAccount = async (req: Request, res: Response) => {
   const { email } = req.body;
@@ -10,6 +12,7 @@ export const createAccount = async (req: Request, res: Response) => {
     return;
   }
   const user = new User(req.body);
+  user.password = await hashPassword(user.password);
   await user.save();
   res.status(201).json({ message: "User created" });
 };
