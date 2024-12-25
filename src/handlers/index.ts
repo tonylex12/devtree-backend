@@ -8,14 +8,16 @@ export const createAccount = async (req: Request, res: Response) => {
   const { email } = req.body;
   const userExists = await User.findOne({ email });
   if (userExists) {
-    res.status(409).json({ message: "User's email already exists" });
+    const error = new Error("User's email already exists");
+    res.status(409).json({ error: error.message });
     return;
   }
   const handle = slug(req.body.handle, "");
 
   const handleExists = await User.findOne({ handle });
   if (handleExists) {
-    res.status(409).json({ message: "Username not available" });
+    const error = new Error("Username not available");
+    res.status(409).json({ error: error.message });
     return;
   }
 
@@ -30,14 +32,16 @@ export const login = async (req: Request, res: Response) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
   if (!user) {
-    res.status(404).json({ message: "User not found" });
+    const error = new Error("User not found");
+    res.status(404).json({ error: error.message });
     return;
   }
 
   const passwordCorrect = await checkPassword(password, user.password);
 
   if (!passwordCorrect) {
-    res.status(401).json({ message: "Password incorrect" });
+    const error = new Error("Password incorrect");
+    res.status(401).json({ error: error.message });
     return;
   }
 
