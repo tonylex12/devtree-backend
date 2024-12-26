@@ -53,35 +53,6 @@ export const login = async (req: Request, res: Response) => {
 };
 
 export const getUser = async (req: Request, res: Response) => {
-  const bearer = req.headers.authorization;
-
-  if (!bearer) {
-    const error = new Error("Not authenticated");
-    res.status(401).json({ error: error.message });
-    return;
-  }
-
-  const [, token] = bearer.split(" ");
-  if (!token) {
-    const error = new Error("Not authenticated");
-    res.status(401).json({ error: error.message });
-    return;
-  }
-
-  try {
-    const result = jwt.verify(token, process.env.VITE_JWT_SECRET);
-    if(typeof result === "object" && result.id) {
-      const user = await User.findById(result.id).select("-password");
-      if(!user) {
-        const error = new Error("User not found");
-        res.status(404).json({ error: error.message });
-        return;
-      }
-      res.status(200).json(user);
-      return;
-    }
-  } catch (error) {
-    res.status(500).json({ error: "Not valid token" });
-    return;
-  }
+  res.json(req.user);
+  return;
 };
