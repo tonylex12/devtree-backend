@@ -1,6 +1,6 @@
-import moongose, { Schema } from "mongoose";
+import moongose, { Schema, Document } from "mongoose";
 
-export interface IUser {
+export interface IUser extends Document {
   handle: string;
   name: string;
   email: string;
