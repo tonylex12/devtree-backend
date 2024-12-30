@@ -97,7 +97,9 @@ export const uploadImage = async (req: Request, res: Response) => {
             return;
           }
           if (result) {
-            console.log(result.secure_url);
+            req.user.image = result.secure_url;
+            await req.user.save();
+            res.json({ image: result.secure_url });
           }
         }
       );
