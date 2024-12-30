@@ -1,10 +1,11 @@
 import slug from "slug";
-import { validationResult } from "express-validator";
+import formidable from "formidable";
+import { v4 as uuid } from "uuid";
 import { Request, Response } from "express";
 import User from "../models/User";
 import { checkPassword, hashPassword } from "../utils/auth";
 import { generateJWT } from "../utils/jwt";
-import jwt from "jsonwebtoken";
+import cloudinary from "../config/cloudinary";
 
 export const createAccount = async (req: Request, res: Response) => {
   const { email } = req.body;
@@ -74,6 +75,33 @@ export const updateProfile = async (req: Request, res: Response) => {
 
     await req.user.save();
     res.status(200).json({ message: "User updated" });
+  } catch (e) {
+    const error = new Error("There was an error");
+    res.status(500).json({ error: error.message });
+    return;
+  }
+};
+
+export const uploadImage = async (req: Request, res: Response) => {
+  const form = formidable({ multiples: false });
+
+  try {
+    form.parse(req, async (error, fields, files) => {
+      cloudinary.uploader.upload(
+        files.file[0].filepath,
+        {public_id: uuid()},
+        async function (error, result) {
+          if (error) {
+            const error = new Error("There was an error");
+            res.status(500).json({ error: error.message });
+            return;
+          }
+          if (result) {
+            console.log(result.secure_url);
+          }
+        }
+      );
+    });
   } catch (e) {
     const error = new Error("There was an error");
     res.status(500).json({ error: error.message });
